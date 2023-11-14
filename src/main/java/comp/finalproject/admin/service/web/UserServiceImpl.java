@@ -1,4 +1,4 @@
-package comp.finalproject.admin.service;
+package comp.finalproject.admin.service.web;
 
 
 import comp.finalproject.admin.dto.UserDto;
@@ -7,6 +7,7 @@ import comp.finalproject.admin.entity.User;
 import comp.finalproject.admin.repository.RoleRepository;
 import comp.finalproject.admin.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Component("webUserService")
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
@@ -60,11 +62,28 @@ public class UserServiceImpl implements UserService {
     private UserDto mapToUserDto(User user){
         UserDto userDto = new UserDto();
         String[] str = user.getName().split(" ");
-        userDto.setFirstName(str[0]);
-        userDto.setLastName(str[1]);
+
+        if (str.length > 1) {
+            userDto.setFirstName(str[0]);
+            userDto.setLastName(str[1]);
+        } else if (str.length > 0) {
+            userDto.setFirstName(str[0]);
+            // Tidak ada nama belakang
+        }
+
         userDto.setEmail(user.getEmail());
         return userDto;
     }
+
+//
+//    private UserDto mapToUserDto(User user){
+//        UserDto userDto = new UserDto();
+//        String[] str = user.getName().split(" ");
+//        userDto.setFirstName(str[0]);
+//        userDto.setLastName(str[1]);
+//        userDto.setEmail(user.getEmail());
+//        return userDto;
+//    }
 
     private Role checkRoleExist(){
         Role role = new Role();

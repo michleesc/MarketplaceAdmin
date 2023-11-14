@@ -1,18 +1,17 @@
-package comp.finalproject.admin.controller;
+package comp.finalproject.admin.controller.web;
 
 import comp.finalproject.admin.entity.Item;
 import comp.finalproject.admin.entity.Sale;
 import comp.finalproject.admin.entity.User;
 import comp.finalproject.admin.repository.ItemRepository;
 import comp.finalproject.admin.repository.SalesRepository;
-import comp.finalproject.admin.service.UserService;
+import comp.finalproject.admin.service.web.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,10 +34,13 @@ public class SaleController {
         // Menambahkan atribut firstName ke objek Model
         model.addAttribute("email", email);
         model.addAttribute("name", name);
-        List<Sale> allSales = salesRepository.findAllByOrderByIdDesc();
+
+        List<Sale> allSales = salesRepository.findAll();
         model.addAttribute("sales", allSales);
-        List<String> statusList = Arrays.asList("Menunggu Konfirmasi", "Proses", "Sedang Dikirim", "Selesai");
+
+        List<String> statusList = Arrays.asList("Menunggu", "Success");
         model.addAttribute("statusList", statusList);
+
         return "sale/sales";
     }
 
@@ -70,3 +72,4 @@ public class SaleController {
         return "redirect:/sales";
     }
 }
+

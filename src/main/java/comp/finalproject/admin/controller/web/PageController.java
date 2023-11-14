@@ -1,4 +1,4 @@
-package comp.finalproject.admin.controller;
+package comp.finalproject.admin.controller.web;
 
 import comp.finalproject.admin.entity.Item;
 import comp.finalproject.admin.entity.Sale;
@@ -6,7 +6,7 @@ import comp.finalproject.admin.entity.User;
 import comp.finalproject.admin.repository.ItemRepository;
 import comp.finalproject.admin.repository.SalesRepository;
 import comp.finalproject.admin.repository.UserRepository;
-import comp.finalproject.admin.service.UserService;
+import comp.finalproject.admin.service.web.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -17,10 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -46,18 +42,18 @@ public class PageController {
     }
 
     @GetMapping("/pages")
-    public String pages(Model model, Principal principal, User user) {
+    public String pages(Model model, Principal principal) {
         String email = principal.getName();
-        user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email);
         if (user != null) {
             String name = user.getName();
             model.addAttribute("email", email);
             model.addAttribute("name", name);
         }
 
-
         List<Sale> allSales = salesRepository.findAllByOrderByIdDesc();
         model.addAttribute("sales", allSales);
+
 
         // Top Selling Items
         List<Item> topSellingItems = itemRepository.findByTotalSoldGreaterThanOrderByTotalSoldDesc(0);
@@ -107,10 +103,8 @@ public class PageController {
         if (user.getEmail() != null && !user.getEmail().isEmpty()) {
             existingUser.setEmail(user.getEmail());
         }
-
         userRepository.save(existingUser);
-
-        return "redirect:/auth/login";
+        return "redirect:/pages-profile";
     }
 
     @PostMapping("/pages-profile/passwordsave")
@@ -129,20 +123,20 @@ public class PageController {
         // Validasi password saat ini
         if (!passwordEncoder.matches(currentPassword, existingUser.getPassword())) {
             model.addAttribute("passwordError", "Current password is incorrect");
-            return "redirect:/page/pages-profile";
+            return "redirect:/pages-profile";
         }
 
         // Validasi password baru
         if (!newPassword.equals(reEnterNewPassword)) {
             model.addAttribute("passwordError", "New password and re-entered password do not match");
-            return "redirect:/page/pages-profile";
+            return "redirect:/pages-profile";
         }
 
         // Setel password baru
         existingUser.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(existingUser);
 
-        return "redirect:/page/pages-profile";
+        return "redirect:/pages-profile";
     }
 
     @GetMapping("/pages-faq")

@@ -277,20 +277,22 @@
                                         <!-- ID -->
                                         <th scope="row"><a href="#" th:text="${sale.getId()}"></a></th>
                                         <!-- Nama -->
-                                        <td th:text="${sale.user.getName()}"></td>
+                                        <td th:text="${sale.getUser.getName()}"></td>
                                         <!-- Product Name -->
                                         <td>
-                                            <a href="#" class="text-primary" th:text="${sale.item.getName()}"></a>
+                                            <span th:if="${sale != null and sale.getItem() != null}"
+                                                  th:text="${sale.getItem().getName()}"></span>
                                         </td>
                                         <!-- Quantity -->
                                         <td>
                                             <a th:text="${sale.getQuantity()}"></a>
                                         </td>
                                         <!-- Price -->
-                                        <td th:text="${sale.getSubtotal()}"></td>
+                                        <td th:text="'Rp. ' + ${#numbers.formatDecimal(sale.subtotal, 0, 'COMMA', 2, 'POINT')}"></td>
                                         <!-- Status -->
                                         <td>
-                                            <span th:text="${sale.getStatus()}"></span>
+                                            <span th:text=" ${sale.getStatus()}
+                                        "></span>
                                         </td>
                                     </tr>
                                 </th:block>
@@ -324,10 +326,11 @@
                                     </th>
                                     <!-- Name Item -->
                                     <td>
-                                        <a th:href="@{/item/{id}(id=${item.id})}" class="fw-bold" th:text="${item.name}"></a>
+                                        <a th:href="@{/item/{id}(id=${item.id})}" class="fw-bold"
+                                           th:text="${item.name}"></a>
                                     </td>
                                     <!-- Price -->
-                                    <td th:text="${item.amount}"></td>
+                                    <td th:text="'Rp. ' + ${#numbers.formatDecimal(item.amount, 0, 'COMMA', 2, 'POINT')}"></td>
                                     <!-- Sold -->
                                     <td class="fw-bold" th:text="${item.totalSold}"></td>
                                 </tr>

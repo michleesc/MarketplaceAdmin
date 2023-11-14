@@ -1,4 +1,4 @@
-package comp.finalproject.admin.service;
+package comp.finalproject.admin.service.web;
 
 import comp.finalproject.admin.dto.UserDto;
 import comp.finalproject.admin.entity.User;

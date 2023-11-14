@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Tables Item - TOKPHONE ADMIN</title>
+    <title>Tables Sales - TOKPHONE ADMIN</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
@@ -156,7 +156,7 @@
                     </a>
                 </li>
                 <li>
-                    <a th:href="@{/items}" >
+                    <a th:href="@{/items}">
                         <i class="bi bi-circle"></i><span>Show Item</span>
                     </a>
                 </li>
@@ -210,15 +210,14 @@
                         <table class="table datatable">
                             <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Tanggal Transaksi</th>
-                                <th>Item Name</th>
-                                <th>Quantity</th>
-                                <th>Subtotal</th>
-                                <th>Status</th>
-                                <th>User</th>
-                                <th>Email</th>
-                                <th>Action</th>
+                                <th scope="col">#</th>
+                                <th scope="col">Tanggal Transaksi</th>
+                                <th scope="col">Item Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Subtotal</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">User</th>
+                                <th scope="col">Action</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -227,19 +226,20 @@
                                 <td th:text="${sale.date}"></td>
                                 <td th:text="${sale.item.name}"></td>
                                 <td th:text="${sale.quantity}"></td>
-                                <td th:text="${#numbers.formatDecimal(sale.subtotal, 0, 'COMMA', 2, 'POINT')}"></td>
+                                <td th:text="'Rp. ' + ${#numbers.formatDecimal(sale.subtotal, 0, 'COMMA', 2, 'POINT')}"></td>
                                 <td>
                                     <form th:action="@{/updatesalestatus/{saleId}(saleId=${sale.id})}" method="post">
                                         <select name="status">
-                                            <option th:each="status : ${statusList}" th:text="${status}" th:selected="${status == sale.status}"></option>
+                                            <option th:each="status : ${statusList}" th:text="${status}"
+                                                    th:selected="${status == sale.status}"></option>
                                         </select>
                                         <button type="submit">Update</button>
                                     </form>
                                 </td>
-                                <td th:text="${sale.user.name}"></td>
-                                <td th:text="${sale.user.email}"></td>
+                                <td th:text="${sale.getUser().getName()}"></td>
                                 <td>
-                                    <a th:href="@{/deletesales/{id}(id=${sale.id})}" class="btn btn-danger">Batalkan Pesanan</a>
+                                    <a th:href="@{/deletesales/{id}(id=${sale.id})}" class="btn btn-danger">Batalkan
+                                        Pesanan</a>
                                 </td>
                             </tr>
                             </tbody>
@@ -247,10 +247,10 @@
                         <!-- End Table with stripped rows -->
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
+
 </main>
 <!-- End #main -->
 
