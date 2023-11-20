@@ -16,6 +16,7 @@ public interface SalesRepository extends JpaRepository<Sale, Long> {
     List<Sale> findByDate(Date date);
 
     List<Sale> findAllByOrderByIdDesc();
+    List<Sale> findByDateBetween(Date startDate, Date endDate);
 
     /*int deleteById(int id);
 

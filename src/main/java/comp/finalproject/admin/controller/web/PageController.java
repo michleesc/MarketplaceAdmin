@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -51,7 +53,13 @@ public class PageController {
             model.addAttribute("name", name);
         }
 
-        List<Sale> allSales = salesRepository.findAllByOrderByIdDesc();
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
+
+        Date startDate = java.sql.Date.valueOf(today);
+        Date endDate = java.sql.Date.valueOf(tomorrow);
+
+        List<Sale> allSales = salesRepository.findByDateBetween(startDate, endDate);
         model.addAttribute("sales", allSales);
 
 

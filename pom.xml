@@ -103,6 +103,7 @@
             <groupId>com.itextpdf</groupId>
             <artifactId>itext7-core</artifactId>
             <version>7.1.16</version> <!-- Sesuaikan versi iTextPDF -->
+            <type>pom</type>
         </dependency>
 
         <dependency>

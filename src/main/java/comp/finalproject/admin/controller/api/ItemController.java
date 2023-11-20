@@ -41,4 +41,10 @@ public class ItemController {
     public ResponseEntity<?> deleteById(@PathVariable long id) {
         return itemService.softDeleteByIdApi(id);
     }
+
+    @PostMapping("/makanan/restore/{id}")
+    public ResponseEntity<?> restoreById(@PathVariable long id) {
+        return itemService.restoreById(id);
+    }
+
 }

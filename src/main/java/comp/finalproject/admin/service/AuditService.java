@@ -6,39 +6,42 @@ import org.javers.core.Javers;
 import org.javers.core.commit.CommitMetadata;
 import org.javers.core.diff.Change;
 import org.javers.core.diff.changetype.ValueChange;
+import org.javers.core.metamodel.object.CdoSnapshot;
 import org.javers.repository.jql.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class AuditService {
     @Autowired
     private Javers javers;
 
-    public ResponseEntity<?> findAllChange() {
+    public ResponseEntity<List<Map<String, Object>>> findAllChange() {
         QueryBuilder jqlQuery = QueryBuilder.byClass(Item.class);
         List<ChangesByCommit> changesByCommits = javers.findChanges(jqlQuery.build()).groupByCommit();
-
         List<Map<String, Object>> changeDetailsList = new ArrayList<>();
 
         for (ChangesByCommit commitChanges : changesByCommits) {
             CommitMetadata commit = commitChanges.getCommit();
 
             // Extract commitDate, author
-            String commitDate = commit.getCommitDate().toString();
+            LocalDateTime commitDate = commit.getCommitDate();
+            DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+            String formattedDate = commitDate.format(myFormatObj);
+
             String author = commit.getAuthor();
 
             List<Change> allChanges = commitChanges.get();
             Map<String, Object> changeDetails = new HashMap<>();
-            changeDetails.put("Commit Date", commitDate);
-            changeDetails.put("Author", author);
+            changeDetails.put("commitDate", formattedDate);
+            changeDetails.put("author", author);
 
             List<String> changedProperties = new ArrayList<>();
             Map<String, Object> left = new HashMap<>();
@@ -52,6 +55,11 @@ public class AuditService {
                     Object originalValue = valueChange.getLeft();
                     Object newValue = valueChange.getRight();
 
+                    // Skip perubahan pada properti ID
+                    if ("id".equals(property)) {
+                        continue;
+                    }
+
                     if (originalValue == null && newValue != null) {
                         // Jika nilai awal null dan nilai baru bukan null, ini adalah inisialisasi
                         changeType = "Initial";
@@ -61,6 +69,12 @@ public class AuditService {
                             changeType = "Update";
                         }
                     }
+                    if ("deleted".equals(property) && Boolean.TRUE.equals(newValue)) {
+                        // Ini adalah penghapusan
+                        changeType = "Delete";
+                    } else if ("deleted".equals(property) && Boolean.FALSE.equals(newValue)) {
+                        changeType = "Restore";
+                    }
 
                     // Populate changedProperties and state
                     changedProperties.add(property);
@@ -68,6 +82,7 @@ public class AuditService {
                     right.put(property, newValue);
                 }
             }
+
 
             // Determine the changeType based on changed properties
             changeDetails.put("changedProperties", changedProperties);
@@ -78,9 +93,9 @@ public class AuditService {
         }
 
         if (!changeDetailsList.isEmpty()) {
-            return new ResponseEntity<>(javers.getJsonConverter().toJson(changeDetailsList), HttpStatus.OK);
+            return new ResponseEntity<>(changeDetailsList, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("No changes found", HttpStatus.OK);
+            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
         }
     }
 }

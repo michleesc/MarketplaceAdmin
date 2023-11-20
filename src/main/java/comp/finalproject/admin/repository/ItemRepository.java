@@ -23,8 +23,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByTotalSoldGreaterThanOrderByTotalSoldDesc(int totalSold);
 
     List<Item> findByDeletedFalseOrderByIdDesc();
-
+    List<Item> findByDeletedTrueOrderByIdDesc();
     List<Item> findByDeletedFalseOrderByCreatedAtDesc();
+
     /*void deleteById(long id);
 
 

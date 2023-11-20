@@ -2,10 +2,8 @@ package comp.finalproject.admin.controller.web;
 
 import comp.finalproject.admin.entity.Item;
 import comp.finalproject.admin.entity.User;
-import comp.finalproject.admin.repository.ItemRepository;
 import comp.finalproject.admin.service.web.ItemService;
 import comp.finalproject.admin.service.web.UserService;
-import org.javers.core.Javers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -24,12 +22,7 @@ public class ItemController {
     @Autowired
     private UserService userService;
     @Autowired
-    private ItemRepository itemRepository;
-    @Autowired
     private ItemService itemService;
-
-    @Autowired
-    private Javers javers;
 
     // handler methods go here...
     @RequestMapping("/items")
@@ -85,6 +78,32 @@ public class ItemController {
     public String delete(@PathVariable(name = "id") long id) {
         itemService.softDeleteById(id);
         return "redirect:/items";
+    }
+
+
+    @RequestMapping("/restores")
+    public String restore(Model model, Principal principal) {
+
+        String email = principal.getName();
+
+        User user = userService.findUserByEmail(email);
+        String name = user.getName();
+
+        // Menambahkan atribut firstName ke objek Model
+        model.addAttribute("email", email);
+        model.addAttribute("name", name);
+
+        List<Item> listItem = itemService.findAllRestore();
+
+        model.addAttribute("listItem", listItem);
+        return "item/restores";
+
+    }
+
+    @RequestMapping("/restores/{id}")
+    public String restore(@PathVariable(name = "id") long id) {
+        itemService.restoreById(id);
+        return "redirect:/restores";
     }
 
 }

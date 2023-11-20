@@ -32,6 +32,7 @@ public class SpringSecurity {
                                 .antMatchers("/").permitAll()
                                 .antMatchers("/pages").hasRole("ADMIN")
                                 .antMatchers("/items").hasRole("ADMIN")
+                                .antMatchers("/audits").hasRole("ADMIN")
                                 .antMatchers("/users").hasRole("ADMIN")
                                 .antMatchers("/sales").hasRole("ADMIN")
                                 .antMatchers("/itemsedit/**").hasRole("ADMIN")

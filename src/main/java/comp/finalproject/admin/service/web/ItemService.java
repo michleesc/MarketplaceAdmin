@@ -31,6 +31,10 @@ public class ItemService {
         return itemRepository.findByDeletedFalseOrderByIdDesc();
     }
 
+    public List<Item> findAllRestore() {
+        return itemRepository.findByDeletedTrueOrderByIdDesc();
+    }
+
     public void saveItemImage(Item item, MultipartFile image) throws IOException {
         if (!image.isEmpty()) {
             String fileName = UUID.randomUUID().toString() + "-" + image.getOriginalFilename();
@@ -42,7 +46,6 @@ public class ItemService {
 
             image.transferTo(new File(filePathUser));
             item.setImagePath(filePathDatabase);
-
         }
         item.setCreatedAt(new Date());
         itemRepository.save(item);
@@ -79,10 +82,9 @@ public class ItemService {
 
             // Setel path gambar ke model
             item.setImagePath(filePathDatabase);
-            item.setUpdatedAt(new Date());
         }
-        item.setUpdatedAt(new Date());
         // Simpan gambar baru ke server
+        item.setUpdatedAt(new Date());
         itemRepository.save(item);
     }
 
@@ -93,7 +95,18 @@ public class ItemService {
             // setting delete menjadi true
             item.setDeleted(true);
             item.setDeletedAt(new Date());
-            item.setUpdatedAt(new Date());
+            // simpan perubahan kedalam database
+            itemRepository.save(item);
+        }
+    }
+
+    public void restoreById(long id) {
+        Item item = itemRepository.findById(id);
+        // jika makanan ada akan diproses
+        if (item != null) {
+            // setting delete menjadi true
+            item.setDeleted(false);
+            item.setDeletedAt(new Date());
             // simpan perubahan kedalam database
             itemRepository.save(item);
         }

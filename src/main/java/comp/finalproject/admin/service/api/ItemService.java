@@ -86,7 +86,18 @@ public class ItemService {
             // setting delete menjadi true
             item.setDeleted(true);
             item.setDeletedAt(new Date());
-            item.setUpdatedAt(new Date());
+            // simpan perubahan kedalam database
+            itemRepository.save(item);
+        }
+        return new ResponseEntity<>(item, HttpStatus.OK);
+    }
+    public ResponseEntity<?> restoreById(long id) {
+        Item item = itemRepository.findById(id);
+        // jika makanan ada akan diproses
+        if (item != null) {
+            // setting delete menjadi true
+            item.setDeleted(false);
+            item.setDeletedAt(new Date());
             // simpan perubahan kedalam database
             itemRepository.save(item);
         }

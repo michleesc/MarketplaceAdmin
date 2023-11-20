@@ -5,14 +5,19 @@ import comp.finalproject.admin.entity.Sale;
 import comp.finalproject.admin.entity.User;
 import comp.finalproject.admin.repository.ItemRepository;
 import comp.finalproject.admin.repository.SalesRepository;
+import comp.finalproject.admin.repository.UserRepository;
 import comp.finalproject.admin.service.web.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.crypto.Data;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -24,6 +29,7 @@ public class SaleController {
     private ItemRepository itemRepository;
     @Autowired
     UserService userService;
+
     @GetMapping("/sales")
     public String viewAllSales(Model model, Principal principal) {
         String email = principal.getName();
@@ -35,13 +41,46 @@ public class SaleController {
         model.addAttribute("email", email);
         model.addAttribute("name", name);
 
-        List<Sale> allSales = salesRepository.findAll();
+        List<Sale> allSales = salesRepository.findAllByOrderByIdDesc();
         model.addAttribute("sales", allSales);
 
         List<String> statusList = Arrays.asList("Menunggu", "Success");
         model.addAttribute("statusList", statusList);
 
         return "sale/sales";
+    }
+
+    @GetMapping("/sales/search")
+    public String searchByDate(@RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                               @RequestParam(name = "endDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+                               Model model, Principal principal) {
+        List<Sale> data;
+        String email = principal.getName();
+
+        User user = userService.findUserByEmail(email);
+        String name = user.getName();
+
+        // Menambahkan atribut firstName ke objek Model
+        model.addAttribute("email", email);
+        model.addAttribute("name", name);
+
+        // update
+        List<String> statusList = Arrays.asList("Menunggu", "Success");
+        model.addAttribute("statusList", statusList);
+
+        // searching
+        if (startDate != null && endDate != null) {
+            // jika pencarian berhasil
+            data = salesRepository.findByDateBetween(startDate, endDate);
+        } else if (startDate!= null && endDate == null) {
+            Date endDateIsNull = java.sql.Date.valueOf(LocalDate.now());
+            data = salesRepository.findByDateBetween(startDate,endDateIsNull);
+        } else {
+            // jika pencarian gagal, tampilkan semuanya
+            data = salesRepository.findAllByOrderByIdDesc();
+        }
+        model.addAttribute("sales", data);
+        return "sale/listsales";
     }
 
     @PostMapping("/updatesalestatus/{saleId}")
