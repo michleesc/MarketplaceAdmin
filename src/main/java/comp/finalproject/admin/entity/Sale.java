@@ -2,6 +2,7 @@ package comp.finalproject.admin.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -27,6 +28,7 @@ public class Sale implements Serializable {
     private int quantity;
     private float subtotal;
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
     private String status;
     @Column(name = "metode_pembayaran")
