@@ -25,7 +25,7 @@ public class AuditController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/audit")
+    @GetMapping("/audits")
     public String showAudit(Model model, Principal principal) {
         String email = principal.getName();
 

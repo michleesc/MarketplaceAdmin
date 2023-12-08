@@ -173,7 +173,7 @@
           </a>
         </li>
         <li>
-          <a th:href="@{/audit}">
+          <a th:href="@{/audits}">
             <i class="bi bi-circle"></i><span>Show Audit</span>
           </a>
         </li>
@@ -296,7 +296,7 @@
                 <td th:text="${sale.date}"></td>
                 <td th:text="${sale.item.name}"></td>
                 <td th:text="${sale.quantity}"></td>
-                <td th:text="'Rp. ' + ${#numbers.formatDecimal(sale.subtotal, 0, 'COMMA', 2, 'POINT')}"></td>
+                <td th:text="${#numbers.formatDecimal(sale.subtotal, 0, 'COMMA', 2, 'POINT')}"></td>
                 <td>
                   <form th:action="@{/updatesalestatus/{saleId}(saleId=${sale.id})}" method="post">
                     <select name="status">

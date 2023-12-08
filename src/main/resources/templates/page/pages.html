@@ -39,6 +39,8 @@
     <!-- Template Main CSS File -->
     <link href="assets/css/style.css" rel="stylesheet"/>
 
+    <!-- chart.html -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <!-- =======================================================
   * Template Name: NiceAdmin
   * Updated: May 30 2023 with Bootstrap v5.3.0
@@ -211,7 +213,7 @@
                     </a>
                 </li>
                 <li>
-                    <a th:href="@{/audit}">
+                    <a th:href="@{/audits}">
                         <i class="bi bi-circle"></i><span>Show Audit</span>
                     </a>
                 </li>
@@ -258,17 +260,108 @@
     </div>
     <!-- End Page Title -->
 
+
     <section class="section dashboard">
         <div class="row">
             <!-- Left side columns -->
             <div class="row">
+                <!-- Sales Card -->
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card sales-card">
+
+                        <div class="card-body">
+                            <h5 class="card-title">Sales <span>| Today</span></h5>
+
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-cart"></i>
+                                </div>
+
+                                <div class="ps-3">
+                                    <h6 th:text="${salesToday}">salesToday</h6>
+                                    <span class="small pt-1 fw-bold"
+                                          th:text="${salesComparisonPercentage} + ' % '"
+                                          th:class="${salesComparisonPercentage > 0 ? 'text-success' : (salesComparisonPercentage < 0 ? 'text-danger' : 'text-secondary')}">
+                                        percentageChange
+                                    </span>
+
+                                    <span th:text="${salesComparisonPercentage == 0 ? 'same before yesterday' : 'increase before yesterday'}"
+                                          class="text-muted small pt-2 ps-1">increase before yesterday</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div><!-- End Sales Card -->
+
+                <!-- Revenue Card -->
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card revenue-card">
+
+                        <div class="card-body">
+                            <h5 class="card-title">Omset <span>| Today</span></h5>
+
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-currency-dollar"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6 th:text="${omsetToday == 0 ? 'Rp' : 'Rp. ' + #numbers.formatInteger(omsetToday,3,'POINT')}"></h6>
+                                    <span class="text-success small pt-1 fw-bold"
+                                          th:text="${percentageChangeOmset} + ' % '"
+                                          th:class="${percentageChangeOmset > 0 ? 'text-success' : (percentageChangeOmset < 0 ? 'text-danger' : 'text-secondary')}">
+                                        percentageChange
+                                    </span>
+                                    <span th:text="${percentageChangeOmset == 0 ? 'same before yesterday' : 'increase before yesterday'}"
+                                          class="text-muted small pt-2 ps-1"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div><!-- End Revenue Card -->
+                <!-- Chart Sales -->
+                <div class="col-12">
+                    <div class="card chart-container">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Chart Sales <span>| Today</span></h5>
+                            <div id="lineChart"></div>
+                                <script type="text/javascript">
+                                    google.charts.load('current', {'packages': ['corechart']});
+                                    google.charts.setOnLoadCallback(drawChart);
+
+                                    function drawChart() {
+                                        var data = new google.visualization.DataTable();
+                                        data.addColumn('string', 'Jam');
+                                        data.addColumn('number', 'Penjualan');
+
+                                        // Mengambil data dari model di Thymeleaf
+                                        var chartData = /*[# th:utext="${chartData}"]*/ '[]' /*[/]*/;
+                                        chartData = JSON.parse(chartData);
+
+                                        // Mengisi data ke dalam DataTable
+                                        for (var i = 0; i < chartData.length; i++) {
+                                            data.addRow([new Date(chartData[i].jam), chartData[i].penjualan]);
+                                        }
+                                        var options = {
+                                            title: 'Penjualan Harian',
+                                            curveType: 'function',
+                                            legend: {position: 'bottom'}
+                                        };
+
+                                        var chart = new google.visualization.LineChart(document.getElementById('lineChart'));
+                                        chart.draw(data, options);
+                                    }
+                                </script>
+                        </div>
+                    </div>
+                </div>
                 <!-- Recent Sales -->
                 <div class="col-12">
                     <div class="card recent-sales overflow-auto">
                         <div class="card-body">
-                            <h5 class="card-title">
-                                Recent Sales
-                            </h5>
+                            <h5 class="card-title text-center">Recent Sales <span>| Today</span></h5>
+
                             <table class="table table-borderless datatable">
                                 <thead>
                                 <tr>
@@ -298,7 +391,7 @@
                                             <a th:text="${sale.getQuantity()}"></a>
                                         </td>
                                         <!-- Price -->
-                                        <td th:text="'Rp. ' + ${#numbers.formatDecimal(sale.subtotal, 0, 'COMMA', 2, 'POINT')}"></td>
+                                        <td th:text="'Rp. ' + ${#numbers.formatInteger(sale.subtotal,3,'POINT')}"></td>
                                         <!-- Status -->
                                         <td>
                                             <span th:text=" ${sale.getStatus()}
@@ -317,7 +410,7 @@
                 <div class="col-12">
                     <div class="card top-selling overflow-auto">
                         <div class="card-body pb-0">
-                            <h5 class="card-title">Top Selling</h5>
+                            <h5 class="card-title text-center">Top Selling</h5>
 
                             <table class="table table-borderless datatable">
                                 <thead>
@@ -340,7 +433,7 @@
                                            th:text="${item.name}"></a>
                                     </td>
                                     <!-- Price -->
-                                    <td th:text="'Rp. ' + ${#numbers.formatDecimal(item.amount, 0, 'COMMA', 2, 'POINT')}"></td>
+                                    <td th:text="'Rp. ' + ${#numbers.formatInteger(item.amount,3,'POINT')}"></td>
                                     <!-- Sold -->
                                     <td class="fw-bold" th:text="${item.totalSold}"></td>
                                 </tr>

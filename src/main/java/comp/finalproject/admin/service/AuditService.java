@@ -3,17 +3,16 @@ package comp.finalproject.admin.service;
 import comp.finalproject.admin.entity.Item;
 import org.javers.core.ChangesByCommit;
 import org.javers.core.Javers;
+import org.javers.core.commit.CommitId;
 import org.javers.core.commit.CommitMetadata;
 import org.javers.core.diff.Change;
 import org.javers.core.diff.changetype.ValueChange;
-import org.javers.core.metamodel.object.CdoSnapshot;
 import org.javers.repository.jql.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -30,6 +29,7 @@ public class AuditService {
 
         for (ChangesByCommit commitChanges : changesByCommits) {
             CommitMetadata commit = commitChanges.getCommit();
+            CommitId commitId = commitChanges.getCommit().getId();
 
             // Extract commitDate, author
             LocalDateTime commitDate = commit.getCommitDate();
@@ -55,20 +55,30 @@ public class AuditService {
                     Object originalValue = valueChange.getLeft();
                     Object newValue = valueChange.getRight();
 
-                    // Skip perubahan pada properti ID
-                    if ("id".equals(property)) {
-                        continue;
-                    }
+                    // Mengambil ID item dari perubahan saat ini
+                    String idItemFull = valueChange.getAffectedGlobalId().toString();
 
-                    if (originalValue == null && newValue != null) {
+                    // Memisahkan dan mengambil bagian ID-nya saja
+                    String[] parts = idItemFull.split("/");
+                    String idItem = parts[1];
+                    left.put("id", idItem);
+                    right.put("id", idItem);
+
+
+                    if ("updatedAt".equals(property) && originalValue == null) {
+                        // Jika updatedAt di sisi left null, tapi di sisi right tidak null, ini adalah update
+                        if (newValue != null) {
+                            changeType = "Update";
+                        } else {
+                            changeType = "Initial";
+                        }
+                    } else if (originalValue == null && newValue != null) {
                         // Jika nilai awal null dan nilai baru bukan null, ini adalah inisialisasi
                         changeType = "Initial";
                     } else if (originalValue != null && newValue != null) {
-                        // Jika kedua nilai ada dan berbeda, ini adalah update
-                        if (!originalValue.equals(newValue)) {
-                            changeType = "Update";
-                        }
+                        changeType = "Update";
                     }
+
                     if ("deleted".equals(property) && Boolean.TRUE.equals(newValue)) {
                         // Ini adalah penghapusan
                         changeType = "Delete";
@@ -76,6 +86,9 @@ public class AuditService {
                         changeType = "Restore";
                     }
 
+                    if ("Initial".equals(changeType)) {
+                        left.remove("id");
+                    }
                     // Populate changedProperties and state
                     changedProperties.add(property);
                     left.put(property, originalValue);
@@ -98,4 +111,5 @@ public class AuditService {
             return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
         }
     }
+
 }

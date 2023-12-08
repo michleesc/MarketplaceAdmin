@@ -2,8 +2,8 @@ package comp.finalproject.admin.service.web;
 
 import comp.finalproject.admin.entity.Item;
 import comp.finalproject.admin.repository.ItemRepository;
-import org.javers.core.Javers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +22,11 @@ import java.util.UUID;
 public class ItemService {
     @Autowired
     private ItemRepository itemRepository;
+    @Value("${upload.image.path}")
+    private String uploadImage;
+
+    @Value("${upload.image.before.path}")
+    private String uploadImageBefore;
 
     public Item findById(long id) {
         return itemRepository.findById(id);
@@ -37,11 +42,10 @@ public class ItemService {
 
     public void saveItemImage(Item item, MultipartFile image) throws IOException {
         if (!image.isEmpty()) {
-            String fileName = UUID.randomUUID().toString() + "-" + image.getOriginalFilename();
-            String uploadDirUser = "C:\\Users\\ASUS\\OneDrive - Microsoft 365\\Documents\\TIA - Academy\\MerdekaFinalProjectMarketplaceUser\\MerdekaFinalProjectMarketplaceUser\\src\\main\\resources\\static\\image\\item";
+            String fileName = UUID.randomUUID() + "-" + image.getOriginalFilename();
             String uploadDatabase = "/image/item/";
 
-            String filePathUser = Paths.get(uploadDirUser, fileName).toString();
+            String filePathUser = Paths.get(uploadImage, fileName).toString();
             String filePathDatabase = Paths.get(uploadDatabase, fileName).toString();
 
             image.transferTo(new File(filePathUser));
@@ -52,29 +56,23 @@ public class ItemService {
     }
 
     public void updateItemImage(Item item, MultipartFile image) throws IOException {
-        String imagePath = "C:\\Users\\ASUS\\OneDrive - Microsoft 365\\Documents\\TIA - Academy\\MerdekaFinalProjectMarketplaceUser\\MerdekaFinalProjectMarketplaceUser\\src\\main\\resources\\static\\image\\item";
         if (!image.isEmpty()) {
             if (item.getImagePath() != null && !item.getImagePath().isEmpty()) {
-                String imageBefore = "C:\\Users\\ASUS\\OneDrive - Microsoft 365\\Documents\\TIA - Academy\\MerdekaFinalProjectMarketplaceUser\\MerdekaFinalProjectMarketplaceUser\\src\\main\\resources\\static";
-                Path imagesPathBefore = Paths.get(imageBefore, item.getImagePath());
+                Path imagesPathBefore = Paths.get(uploadImageBefore, item.getImagePath());
                 try {
                     Files.delete(imagesPathBefore);
-                    System.out.println("File "
-                            + imagesPathBefore.toAbsolutePath().toString()
-                            + " successfully removed");
+                    System.out.println("File " + imagesPathBefore.toAbsolutePath().toString() + " successfully removed");
                 } catch (IOException e) {
-                    System.err.println("Unable to delete "
-                            + imagesPathBefore.toAbsolutePath().toString()
-                            + " due to...");
+                    System.err.println("Unable to delete " + imagesPathBefore.toAbsolutePath().toString() + " due to...");
                     e.printStackTrace();
                 }
             }
             // Simpan gambar ke server atau lakukan operasi lain sesuai kebutuhan Anda
-            String fileName = UUID.randomUUID().toString() + "-" + image.getOriginalFilename();
+            String fileName = UUID.randomUUID() + "-" + image.getOriginalFilename();
 
             String uploadDatabase = "/image/item/"; // Ubah dengan direktori upload yang sesuai di server Anda
 
-            String filePathUser = Paths.get(imagePath, fileName).toString(); // user
+            String filePathUser = Paths.get(uploadImage, fileName).toString(); // user
             String filePathDatabase = Paths.get(uploadDatabase, fileName).toString(); // database
 
             // Simpan gambar ke server
@@ -92,6 +90,7 @@ public class ItemService {
         Item item = itemRepository.findById(id);
         // jika makanan ada akan diproses
         if (item != null) {
+            item.getName();
             // setting delete menjadi true
             item.setDeleted(true);
             item.setDeletedAt(new Date());
@@ -106,9 +105,13 @@ public class ItemService {
         if (item != null) {
             // setting delete menjadi true
             item.setDeleted(false);
-            item.setDeletedAt(new Date());
+            item.setUpdatedAt(new Date());
             // simpan perubahan kedalam database
             itemRepository.save(item);
         }
+    }
+
+    public List<Item> topSellingItems() {
+        return itemRepository.findByDeletedFalseAndTotalSoldGreaterThanOrderByTotalSoldDesc(0);
     }
 }

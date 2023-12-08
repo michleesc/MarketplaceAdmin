@@ -78,38 +78,66 @@
 
                                     <div class="col-12">
                                         <label class="form-label">Item Name</label>
-                                        <input input type="text" th:field="*{name}" class="form-control"/>
+                                        <input input type="text" th:field="*{name}" class="form-control" required/>
+                                        <div class="invalid-feedback">
+                                            Nama Tidak Boleh Kosong
+                                        </div>
                                     </div>
 
                                     <div class="col-12">
                                         <label class="form-label">Type Product</label>
-                                        <input input type="text" th:field="*{type}" class="form-control"/>
+                                        <input input type="text" th:field="*{type}" class="form-control" required/>
+                                        <div class="invalid-feedback">
+                                            Type Tidak Boleh Kosong
+                                        </div>
                                     </div>
 
                                     <div class="col-12">
                                         <label class="form-label">Price</label>
-                                        <input type="text" th:field="*{amount}" class="form-control"/>
+                                        <input type="number" th:field="*{amount}" class="form-control" min="1"
+                                               required/>
+                                        <div class="invalid-feedback">
+                                            Price tidak boleh kosong
+                                        </div>
                                     </div>
 
                                     <div class="col-12">
                                         <label class="form-label">Stock</label>
-                                        <input type="text" th:field="*{quantity}" class="form-control"/>
+                                        <input type="number" th:field="*{quantity}" class="form-control" min="1"
+                                               required/>
+                                        <div class="invalid-feedback">
+                                            Quantity Tidak Boleh Kosong
+                                        </div>
                                     </div>
 
                                     <div class="col-12">
                                         <label class="form-label">Total Sold</label>
-                                        <input type="text" th:field="*{totalSold}" class="form-control"/>
+                                        <input type="number" th:field="*{totalSold}" class="form-control" min="0"
+                                               required/>
+                                        <div class="invalid-feedback">
+                                            Total Sold Tidak Boleh Kosong
+                                        </div>
                                     </div>
 
                                     <div class="col-12">
-                                        <label class="form-label">Total Sold</label>
-                                        <textarea type="text" th:field="*{description}" class="form-control"/>
+                                        <label class="form-label">Description</label>
+                                        <textarea type="text" th:field="*{description}" class="form-control" required/>
+                                        <div class="invalid-feedback">
+                                            Description Tidak Boleh Kosong
+                                        </div>
                                     </div>
 
                                     <div class="col-12">
                                         <label class="form-label">Image</label>
-                                        <input type="file" name="image" class="form-control" accept="image/*">
-                                        <input type="hidden" th:field="*{imagePath}">
+                                        <input type="file" name="image" class="form-control"
+                                               accept="image/*">
+                                        <input type="hidden" th:field="*{imagePath}" required>
+
+                                        <small class="form-text text-muted">Upload or keep the current image.</small>
+
+                                        <div class="invalid-feedback">
+                                            Gambar Tidak Boleh Kosong
+                                        </div>
                                     </div>
 
                                     <div class="col-12">

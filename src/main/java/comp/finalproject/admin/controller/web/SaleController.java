@@ -70,10 +70,7 @@ public class SaleController {
         // update
         List<String> statusList = Arrays.asList("Menunggu", "Success");
         model.addAttribute("statusList", statusList);
-        System.out.println("Start Date : " + startDate);
         // searching
-
-
         if (startDate != null && endDate != null) {
             Calendar startCalendar = Calendar.getInstance();
             startCalendar.setTime(startDate);
@@ -101,7 +98,6 @@ public class SaleController {
             // jika pencarian gagal, tampilkan semuanya
             data = salesRepository.findAllByOrderByIdDesc();
         }
-        System.out.println("sales data : " + data.size());
         model.addAttribute("sales", data);
         return "sale/listsales";
     }

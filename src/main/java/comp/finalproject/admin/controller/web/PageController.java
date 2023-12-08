@@ -1,11 +1,12 @@
 package comp.finalproject.admin.controller.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import comp.finalproject.admin.entity.Item;
 import comp.finalproject.admin.entity.Sale;
 import comp.finalproject.admin.entity.User;
-import comp.finalproject.admin.repository.ItemRepository;
-import comp.finalproject.admin.repository.SalesRepository;
 import comp.finalproject.admin.repository.UserRepository;
+import comp.finalproject.admin.service.web.ItemService;
+import comp.finalproject.admin.service.web.PageService;
 import comp.finalproject.admin.service.web.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,9 +18,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
-import java.time.LocalDate;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class PageController {
@@ -28,20 +30,9 @@ public class PageController {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private ItemRepository itemRepository;
+    private ItemService itemService;
     @Autowired
-    private SalesRepository salesRepository;
-
-    public PageController(UserService userService, UserRepository userRepository, SalesRepository salesRepository, ItemRepository itemRepository) {
-        this.userService = userService;
-        this.userRepository = userRepository;
-        this.salesRepository = salesRepository;
-        this.itemRepository = itemRepository;
-    }
-
-    public PageController() {
-
-    }
+    private PageService pageService;
 
     @GetMapping("/pages")
     public String pages(Model model, Principal principal) {
@@ -52,20 +43,48 @@ public class PageController {
             model.addAttribute("email", email);
             model.addAttribute("name", name);
         }
+        // mendapatkan sales hari ini
+        List<Sale> allSales = pageService.getCurrentSales();
 
-        LocalDate today = LocalDate.now();
-        LocalDate tomorrow = today.plusDays(1);
+        // Menghitung jumlah penjualan sebelumnya dan hari ini menggunakan metode di service
+        int currentSalesCount = pageService.getCurrentSalesCount();
 
-        Date startDate = java.sql.Date.valueOf(today);
-        Date endDate = java.sql.Date.valueOf(tomorrow);
+        // Menghitung total dari subtotal penjualan hari ini
+        double currentTotal = allSales.stream().mapToDouble(Sale::getSubtotal).sum();
 
-        List<Sale> allSales = salesRepository.findByDateBetween(startDate, endDate);
-        model.addAttribute("sales", allSales);
+        // Menghitung persentase perubahan
+        double percentageChangeOmset = pageService.calculatePercentageChangeYesterday();
+        double salesComparisonPercentage = pageService.calculateSalesComparisonPercentage();
 
+        // Pembulatan persentase menjadi satu desimal
+        double roundedPercentageChangeOmset = Math.round(percentageChangeOmset * 10.0) / 10.0;
+        double roundedSalesComparisonPercentage = Math.round(salesComparisonPercentage * 10.0) / 10.0;
 
+        List<Item> topSellingItems = itemService.topSellingItems();
+
+        List<Map<String, Object>> chartData = new ArrayList<>();
+        for (Sale sale : allSales) {
+            Map<String, Object> dataPoint = new HashMap<>();
+            // Ubah timestamp ke string jam
+            dataPoint.put("jam", String.valueOf(sale.getDate().getHours()));  // Menggunakan jam penjualan
+            dataPoint.put("penjualan", 1);  // Menggunakan subtotal sebagai nilai penjualan
+            chartData.add(dataPoint);
+            System.out.println(dataPoint);
+            System.out.println(chartData);
+        }
+        model.addAttribute("chartData", chartData);
+        // Total Omset Today
+        model.addAttribute("omsetToday", currentTotal);
+        // Percentage Omset Today
+        model.addAttribute("percentageChangeOmset", roundedPercentageChangeOmset);
+        // Total Sales Today
+        model.addAttribute("salesToday", currentSalesCount);
+        // Percentage Sales Today
+        model.addAttribute("salesComparisonPercentage", roundedSalesComparisonPercentage);
         // Top Selling Items
-        List<Item> topSellingItems = itemRepository.findByTotalSoldGreaterThanOrderByTotalSoldDesc(0);
         model.addAttribute("topSellingItems", topSellingItems);
+        // All Sales Today
+        model.addAttribute("sales", allSales);
 
         return "page/pages";
     }
@@ -74,7 +93,6 @@ public class PageController {
     public String profile(Model model, Principal principal) {
         String email = principal.getName();
         User user = userRepository.findByEmail(email);
-        long userId = user.getId();
 
         if (user != null) {
             String name = user.getName();

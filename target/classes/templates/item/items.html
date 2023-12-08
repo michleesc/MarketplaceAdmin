@@ -166,7 +166,7 @@
                     </a>
                 </li>
                 <li>
-                    <a th:href="@{/audit}">
+                    <a th:href="@{/audits}">
                         <i class="bi bi-circle"></i><span>Show Audit</span>
                     </a>
                 </li>
@@ -235,7 +235,7 @@
                                 <td th:text="${item.id}">ID</td>
                                 <td th:text="${item.name}">Item Name</td>
                                 <td th:text="${item.type}">Type Product</td>
-                                <td th:text="${item.amount}">Price</td>
+                                <td th:text="${#numbers.formatInteger(item.amount,3,'POINT')}">Price</td>
                                 <td th:text="${item.quantity}">Stock</td>
                                 <td th:text="${item.totalSold}">Total Sold</td>
                                 <!--<td>
