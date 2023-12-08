@@ -319,43 +319,9 @@
                         </div>
 
                     </div>
-                </div><!-- End Revenue Card -->
-                <!-- Chart Sales -->
-                <div class="col-12">
-                    <div class="card chart-container">
-                        <div class="card-body">
-                            <h5 class="card-title text-center">Chart Sales <span>| Today</span></h5>
-                            <div id="lineChart"></div>
-                                <script type="text/javascript">
-                                    google.charts.load('current', {'packages': ['corechart']});
-                                    google.charts.setOnLoadCallback(drawChart);
-
-                                    function drawChart() {
-                                        var data = new google.visualization.DataTable();
-                                        data.addColumn('string', 'Jam');
-                                        data.addColumn('number', 'Penjualan');
-
-                                        // Mengambil data dari model di Thymeleaf
-                                        var chartData = /*[# th:utext="${chartData}"]*/ '[]' /*[/]*/;
-                                        chartData = JSON.parse(chartData);
-
-                                        // Mengisi data ke dalam DataTable
-                                        for (var i = 0; i < chartData.length; i++) {
-                                            data.addRow([new Date(chartData[i].jam), chartData[i].penjualan]);
-                                        }
-                                        var options = {
-                                            title: 'Penjualan Harian',
-                                            curveType: 'function',
-                                            legend: {position: 'bottom'}
-                                        };
-
-                                        var chart = new google.visualization.LineChart(document.getElementById('lineChart'));
-                                        chart.draw(data, options);
-                                    }
-                                </script>
-                        </div>
-                    </div>
                 </div>
+                <!-- End Revenue Card -->
+
                 <!-- Recent Sales -->
                 <div class="col-12">
                     <div class="card recent-sales overflow-auto">

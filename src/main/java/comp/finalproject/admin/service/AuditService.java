@@ -61,20 +61,19 @@ public class AuditService {
                     // Memisahkan dan mengambil bagian ID-nya saja
                     String[] parts = idItemFull.split("/");
                     String idItem = parts[1];
-                    left.put("id", idItem);
                     right.put("id", idItem);
+                    left.put("id", idItem);
 
-
-                    if ("updatedAt".equals(property) && originalValue == null) {
+                    if (originalValue == null && newValue != null) {
+                        // Jika nilai awal null dan nilai baru bukan null, ini adalah inisialisasi
+                        changeType = "Initial";
+                    } else if ("updatedAt".equals(property) && originalValue == null) {
                         // Jika updatedAt di sisi left null, tapi di sisi right tidak null, ini adalah update
                         if (newValue != null) {
                             changeType = "Update";
                         } else {
                             changeType = "Initial";
                         }
-                    } else if (originalValue == null && newValue != null) {
-                        // Jika nilai awal null dan nilai baru bukan null, ini adalah inisialisasi
-                        changeType = "Initial";
                     } else if (originalValue != null && newValue != null) {
                         changeType = "Update";
                     }
