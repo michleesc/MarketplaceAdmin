@@ -81,22 +81,19 @@
                                     </div>
 
                                     <script>
-    function checkNameLength(input) {
-        var maxLength = 30;
-        var nameLengthFeedback = document.getElementById('nameLengthFeedback');
+                                        function checkNameLength(input) {
+                                            var maxLength = 30;
+                                            var nameLengthFeedback = document.getElementById('nameLengthFeedback');
 
-        if (input.value.length > maxLength) {
-            input.setCustomValidity('Nama tidak boleh lebih dari ' + maxLength + ' karakter');
-            nameLengthFeedback.style.display = 'block';
-        } else {
-            input.setCustomValidity('');
-            nameLengthFeedback.style.display = 'none';
-        }
-    }
-
+                                            if (input.value.length > maxLength) {
+                                                input.setCustomValidity('Nama tidak boleh lebih dari ' + maxLength + ' karakter');
+                                                nameLengthFeedback.style.display = 'block';
+                                            } else {
+                                                input.setCustomValidity('');
+                                                nameLengthFeedback.style.display = 'none';
+                                            }
+                                        }
                                     </script>
-
-
                                     <div class="col-12">
                                         <label class="form-label">Type Product</label>
                                         <input input type="text" th:field="*{type}" class="form-control" required/>

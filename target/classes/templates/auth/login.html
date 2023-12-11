@@ -73,6 +73,8 @@
                                             <input type="text" name="username" class="form-control" id="username" placeholder="Enter email address" required>
                                             <div class="invalid-feedback">Please enter your email address.</div>
                                         </div>
+                                        <div th:if="${error}" class="text-danger">[[${error}]]</div>
+
                                     </div>
 
                                     <div class="col-12">
