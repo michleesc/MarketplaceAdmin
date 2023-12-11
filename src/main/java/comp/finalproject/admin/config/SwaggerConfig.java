@@ -2,6 +2,8 @@ package comp.finalproject.admin.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -31,5 +33,11 @@ public class SwaggerConfig {
                 "Apache", "www.apache.com", Collections.emptyList());
         return apiInfo;
     }
+
+    @Bean(name = "swaggerPasswordEncoder")
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
 }
 

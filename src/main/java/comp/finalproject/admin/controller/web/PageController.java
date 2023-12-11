@@ -62,17 +62,6 @@ public class PageController {
 
         List<Item> topSellingItems = itemService.topSellingItems();
 
-        List<Map<String, Object>> chartData = new ArrayList<>();
-        for (Sale sale : allSales) {
-            Map<String, Object> dataPoint = new HashMap<>();
-            // Ubah timestamp ke string jam
-            dataPoint.put("jam", String.valueOf(sale.getDate().getHours()));  // Menggunakan jam penjualan
-            dataPoint.put("penjualan", 1);  // Menggunakan subtotal sebagai nilai penjualan
-            chartData.add(dataPoint);
-            System.out.println(dataPoint);
-            System.out.println(chartData);
-        }
-        model.addAttribute("chartData", chartData);
         // Total Omset Today
         model.addAttribute("omsetToday", currentTotal);
         // Percentage Omset Today
