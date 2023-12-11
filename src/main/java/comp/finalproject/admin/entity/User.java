@@ -1,5 +1,6 @@
 package comp.finalproject.admin.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,5 +32,6 @@ public class User
             name="users_roles",
             joinColumns={@JoinColumn(name="USER_ID", referencedColumnName="ID")},
             inverseJoinColumns={@JoinColumn(name="ROLE_ID", referencedColumnName="ID")})
+    @JsonIgnore
     private List<Role> roles = new ArrayList<>();
 }

@@ -36,6 +36,4 @@ public class Sale implements Serializable {
     @Column(name = "proof_of_payment")
     private String proofOfPayment;
     private boolean deleted = false;
-
-
 }
