@@ -1,5 +1,13 @@
 package comp.finalproject.admin.controller.web;
 
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.HorizontalAlignment;
+import com.itextpdf.layout.property.TextAlignment;
 import comp.finalproject.admin.entity.Item;
 import comp.finalproject.admin.entity.Sale;
 import comp.finalproject.admin.entity.User;
@@ -14,9 +22,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.crypto.Data;
+import java.io.IOException;
 import java.security.Principal;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -99,7 +112,11 @@ public class SaleController {
             data = salesRepository.findAllByOrderByIdDesc();
         }
         model.addAttribute("sales", data);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+
         return "sale/listsales";
+
     }
 
     @PostMapping("/updatesalestatus/{saleId}")
@@ -128,6 +145,137 @@ public class SaleController {
             salesRepository.deleteById(id);
         }
         return "redirect:/sales";
+    }
+
+    @GetMapping("/generate-laporan-search")
+    public void generateLaporanPdf(@RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                   @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+                                   HttpServletResponse response) {
+        List<Sale> allSales;
+        if (startDate != null && endDate != null) {
+            Calendar startCalendar = Calendar.getInstance();
+            startCalendar.setTime(startDate);
+
+            Calendar endCalendar = Calendar.getInstance();
+            endCalendar.setTime(endDate);
+            endCalendar.set(Calendar.HOUR_OF_DAY, 23);
+            endCalendar.set(Calendar.MINUTE, 59);
+            endCalendar.set(Calendar.SECOND, 59);
+
+            allSales = salesRepository.findByDateBetween(startDate, endCalendar.getTime());
+        } else if (startDate != null && endDate == null) {
+            Calendar calendar = Calendar.getInstance();
+
+            calendar.setTime(startDate);
+            calendar.set(Calendar.HOUR_OF_DAY, 23);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
+            Date endDateIsNull = new java.sql.Date(calendar.getTimeInMillis());
+
+            allSales = salesRepository.findByDateBetween(startDate, endDateIsNull);
+        } else {
+            allSales = salesRepository.findByDeletedFalseOrderByIdDesc();
+        }
+
+        if (allSales.isEmpty()) {
+            System.out.println("Gagal menemukan Penjualan");
+        }
+
+        try {
+            PdfDocument pdfDocument = new PdfDocument(new PdfWriter(response.getOutputStream()));
+            Document document = new Document(pdfDocument);
+
+            // Menentukan nama file PDF dengan menggunakan tanggal
+            String fileName = "Laporan_" + new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() + ".pdf";
+
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "inline; filename=" + fileName);
+
+            DecimalFormat decimalFormat = new DecimalFormat("#,##0");
+            LocalDate startDateNew = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate endDateNew = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+            document.add(new Paragraph("Periode : " + startDateNew + " - " + endDateNew));
+
+            // Membuat tabel untuk data penjualan
+            Table table = new Table(4);  // Sesuaikan dengan jumlah atribut penjualan
+            table.setHorizontalAlignment(HorizontalAlignment.CENTER); // Menengahkan tabel
+
+            // Menambahkan baris dengan judul
+            table.addCell("Tanggal Penjualan");
+            table.addCell("Item");
+            table.addCell("Jumlah");
+            table.addCell("Total Harga");
+
+            // Menambahkan baris dengan data penjualan
+            for (Sale sale : allSales) {
+                LocalDate saleDate = sale.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                table.addCell(saleDate.toString());
+                table.addCell(String.valueOf(sale.getItem().getName()));
+                table.addCell(String.valueOf(sale.getQuantity()));
+                table.addCell(String.valueOf(decimalFormat.format(sale.getSubtotal())));
+            }
+
+            // Menambahkan tabel ke dokumen
+            document.add(table);
+
+            // Menutup dokumen
+            document.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @GetMapping("/generate-laporan")
+    public void generateLaporanPdfAll(
+            HttpServletResponse response) {
+        List<Sale> allSales = salesRepository.findByDeletedFalseOrderByIdDesc();
+
+        if (allSales.isEmpty()) {
+            System.out.println("Gagal menemukan Penjualan");
+        }
+
+        try {
+            PdfDocument pdfDocument = new PdfDocument(new PdfWriter(response.getOutputStream()));
+            Document document = new Document(pdfDocument);
+
+            // Menentukan nama file PDF dengan menggunakan tanggal
+            String fileName = "Laporan_" + new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() + ".pdf";
+
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "inline; filename=" + fileName);
+
+            DecimalFormat decimalFormat = new DecimalFormat("#,##0");
+
+            document.add(new Paragraph("Periode : " + new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
+
+            // Membuat tabel untuk data penjualan
+            Table table = new Table(4);  // Sesuaikan dengan jumlah atribut penjualan
+            table.setHorizontalAlignment(HorizontalAlignment.CENTER); // Menengahkan tabel
+
+            // Menambahkan baris dengan judul
+            table.addCell("Tanggal Penjualan");
+            table.addCell("Item");
+            table.addCell("Jumlah");
+            table.addCell("Total Harga");
+
+            // Menambahkan baris dengan data penjualan
+            for (Sale sale : allSales) {
+                LocalDate saleDate = sale.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                table.addCell(saleDate.toString());
+                table.addCell(String.valueOf(sale.getItem().getName()));
+                table.addCell(String.valueOf(sale.getQuantity()));
+                table.addCell(String.valueOf(decimalFormat.format(sale.getSubtotal())));
+            }
+
+            // Menambahkan tabel ke dokumen
+            document.add(table);
+
+            // Menutup dokumen
+            document.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

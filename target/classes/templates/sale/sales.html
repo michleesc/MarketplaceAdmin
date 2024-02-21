@@ -224,7 +224,7 @@
                     <div class="card-body">
                         <h5 class="card-title text-center">Data Sales</h5>
                         <!-- Table with stripped rows -->
-                        <form th:action="@{/sales/search}" method="get">
+                        <form th:action="@{/sales/search}" method="get" onsubmit="return validateForm()">
                             <div class="row g-3 align-items-center">
                                 <!-- Start Date -->
                                 <div class="col-auto">
@@ -261,6 +261,19 @@
                             </div>
                         </form>
 
+                        <script>
+                            function validateForm() {
+                                var startDate = document.getElementById("StartDate").value;
+                                var endDate = document.getElementById("EndDate").value;
+
+                                if (startDate === "" || endDate === "") {
+                                    alert("Please enter both Start Date and End Date.");
+                                    return false; // Prevent form submission
+                                }
+
+                                return true; // Allow form submission
+                            }
+                        </script>
 
                         <script type="text/javascript">
                         // Datepicker for Start Date
@@ -272,11 +285,6 @@
                         $('#dpEndDate').datepicker({
                             autoclose: true
                         });
-
-
-
-
-
                         </script>
 
                         <table class="table datatable">
@@ -317,6 +325,8 @@
                             </tbody>
                         </table>
                         <!-- End Table with stripped rows -->
+                        <a th:href="@{/generate-laporan}"
+                           class="btn btn-success" download="laporan.pdf">Download Laporan</a>
                     </div>
                 </div>
             </div>
