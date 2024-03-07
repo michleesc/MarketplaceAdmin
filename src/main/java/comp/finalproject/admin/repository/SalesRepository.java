@@ -17,6 +17,7 @@ public interface SalesRepository extends JpaRepository<Sale, Long> {
     List<Sale> findByDateBetween(Date startDate, Date endDate);
     List<Sale> findByDateBetweenOrderByIdDesc(Date startDate, Date endDate);
     List<Sale> findByDeletedFalseOrderByIdDesc();
+    List <Sale> findByDeletedFalseAndDateBetweenOrderByIdDesc(Date startDate, Date endDate);
 
     /*int deleteById(int id);
 

@@ -329,7 +329,7 @@
                             </tbody>
                         </table>
                         <!-- End Table with stripped rows -->
-                        <a th:href="@{/generate-laporan-search(startDate=${#dates.format(startDate, 'yyyy-MM-dd')}, endDate=${#dates.format(endDate, 'yyyy-MM-dd')})}"
+                        <a th:href="@{/reportPdfPerDate(startDate=${#dates.format(startDate, 'yyyy-MM-dd')}, endDate=${#dates.format(endDate, 'yyyy-MM-dd')})}"
                            class="btn btn-success" download="laporan.pdf">Download Laporan</a>
                     </div>
                 </div>

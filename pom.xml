@@ -98,14 +98,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--Itext PDF -->
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>itext7-core</artifactId>
-            <version>7.1.16</version> <!-- Sesuaikan versi iTextPDF -->
-            <type>pom</type>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -123,6 +115,13 @@
             <groupId>org.javers</groupId>
             <artifactId>javers-spring-boot-starter-sql</artifactId>
             <version>6.6.5</version>
+        </dependency>
+
+        <!--Jasper Report-->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.21.2</version>
         </dependency>
 
     </dependencies>
