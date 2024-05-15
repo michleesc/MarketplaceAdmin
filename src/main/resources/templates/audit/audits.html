@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Tables Audit - TOKPHONE ADMIN</title>
+    <title>Tables Audit - Mulia Tetap Jaya ADMIN</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
@@ -48,7 +48,7 @@
     <div class="d-flex align-items-center justify-content-between">
         <a th:href="@{/pages}" class="logo d-flex align-items-center">
             <img src="assets/img/logo.png" alt="">
-            <span class="d-none d-lg-block">TOKPHONE ADMIN</span>
+            <span class="d-none d-lg-block" style="font-size: 20px;">Mulia Tetap Jaya ADMIN</span>
         </a>
         <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -215,35 +215,36 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title text-center">Data Item</h5>
+                        <h5 class="card-title text-center">Data Audit</h5>
                         <!-- Table with stripped rows -->
-                        <table class="table datatable" style="font-size:13px">
-                            <thead>
-                            <tr>
-                                <th>Change Property</th>
-                                <th>Change Type</th>
-                                <th>Left</th>
-                                <th>Right</th>
-                                <th>Author</th>
-                                <th>Commit Date</th>
-                                <!-- Add more headers based on your data -->
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <!-- Loop through each audit change -->
-                            <!-- Assuming 'auditChanges' is a JSON string -->
-                            <tr th:each="auditChange : ${auditChanges}">
-                                <td th:text="${auditChange.changedProperties}">Change Property</td>
-                                <td th:text="${auditChange.changeType}">Change Type</td>
-                                <td th:text="${auditChange.left}">left</td>
-                                <td th:text="${auditChange.right}">right</td>
-                                <td th:text="${auditChange.author}">Author</td>
-                                <td th:text="${auditChange.commitDate}">Commit Date</td>
-                                <!-- Add more columns based on your data -->
-                            </tr>
-                            </tbody>
-
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table datatable" style="font-size:13px">
+                                <thead>
+                                <tr>
+                                    <th>Change Property</th>
+                                    <th>Change Type</th>
+                                    <th>Left</th>
+                                    <th>Right</th>
+                                    <th>Author</th>
+                                    <th>Commit Date</th>
+                                    <!-- Add more headers based on your data -->
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <!-- Loop through each audit change -->
+                                <!-- Assuming 'auditChanges' is a JSON string -->
+                                <tr th:each="auditChange : ${auditChanges}">
+                                    <td th:text="${auditChange.changedProperties}">Change Property</td>
+                                    <td th:text="${auditChange.changeType}">Change Type</td>
+                                    <td th:text="${auditChange.left}">left</td>
+                                    <td th:text="${auditChange.right}">right</td>
+                                    <td th:text="${auditChange.author}">Author</td>
+                                    <td th:text="${auditChange.commitDate}">Commit Date</td>
+                                    <!-- Add more columns based on your data -->
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <!-- End Table with stripped rows -->
                     </div>
                 </div>
