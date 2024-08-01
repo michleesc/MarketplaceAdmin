@@ -49,7 +49,7 @@ public class SpringSecurity {
         ).logout(
                 logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                        .permitAll().logoutSuccessUrl("/")
+                        .permitAll().logoutSuccessUrl("/login")
                         .permitAll()
         );
         return http.build();

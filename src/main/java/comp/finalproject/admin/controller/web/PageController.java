@@ -115,7 +115,7 @@ public class PageController {
             existingUser.setEmail(user.getEmail());
         }
         userRepository.save(existingUser);
-        return "redirect:/pages-profile";
+        return "redirect:/logout";
     }
 
     @PostMapping("/pages-profile/passwordsave")
@@ -147,7 +147,7 @@ public class PageController {
         existingUser.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(existingUser);
 
-        return "redirect:/pages-profile";
+        return "redirect:/logout";
     }
 
     @GetMapping("/pages-faq")
