@@ -11,17 +11,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.security.Principal;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
 @Controller
 @Component("webAuditController")
 public class AuditController {
-
     @Autowired
     private AuditService auditService;
-
     @Autowired
     private UserService userService;
 

@@ -38,6 +38,4 @@ public class SwaggerConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
-

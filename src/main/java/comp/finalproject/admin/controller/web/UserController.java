@@ -42,4 +42,3 @@ public class UserController {
         return "user/users";
     }
 }
-

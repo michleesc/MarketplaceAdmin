@@ -5,28 +5,18 @@ import comp.finalproject.admin.entity.Sale;
 import comp.finalproject.admin.entity.User;
 import comp.finalproject.admin.repository.ItemRepository;
 import comp.finalproject.admin.repository.SalesRepository;
-import comp.finalproject.admin.repository.UserRepository;
 import comp.finalproject.admin.service.web.UserService;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.crypto.Data;
-import java.io.IOException;
 import java.security.Principal;
-import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Controller
 public class SaleController {

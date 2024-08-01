@@ -1,6 +1,5 @@
 package comp.finalproject.admin.controller.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import comp.finalproject.admin.entity.Item;
 import comp.finalproject.admin.entity.Sale;
 import comp.finalproject.admin.entity.User;
@@ -18,10 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class PageController {

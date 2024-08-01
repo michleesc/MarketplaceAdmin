@@ -97,7 +97,6 @@ public class ItemController {
 
         model.addAttribute("listItem", listItem);
         return "item/restores";
-
     }
 
     @RequestMapping("/restores/{id}")
@@ -105,6 +104,4 @@ public class ItemController {
         itemService.restoreById(id);
         return "redirect:/restores";
     }
-
 }
-
